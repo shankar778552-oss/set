@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lab Exam Set Allotter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#14213D;
+    --ink-light:#2E3A59;
+    --paper:#FBF7EE;
+    --paper-dim:#F1EBDC;
+    --amber:#C9962E;
+    --amber-dark:#A87C1F;
+    --line:#DED4BC;
+    --good:#2F6F4F;
+    --bad:#8C4A2F;
+    --setA:#2F6F4F;
+    --setB:#1D5C86;
+    --setC:#6B3FA0;
+    --setD:#8C4A2F;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    background:var(--ink);
+    background-image:radial-gradient(circle at 20% -10%, #1c2f57 0%, var(--ink) 55%);
+    font-family:'Inter',system-ui,sans-serif;
+    color:var(--ink);
+    min-height:100%;
+    display:flex;
+    justify-content:center;
+    padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
+  }
+  .shell{
+    width:100%;
+    max-width:480px;
+    margin:auto;
+  }
+  .card{
+    background:var(--paper);
+    border-radius:18px;
+    box-shadow:0 20px 50px rgba(0,0,0,.35);
+    overflow:hidden;
+    border:1px solid #00000010;
+  }
+  header.top{
+    padding:22px 24px 18px;
+    border-bottom:1px solid var(--line);
+  }
+  header.top h1{
+    font-family:'Lora',serif;
+    font-weight:700;
+    font-size:1.3rem;
+    margin:0 0 4px;
+    color:var(--ink);
+  }
+  header.top p{
+    margin:0;
+    font-size:.85rem;
+    color:var(--ink-light);
+  }
+  .body-pad{padding:22px 24px 26px;}
+
+  /* ---- Setup screen ---- */
+  .field{margin-bottom:16px;}
+  .field label{
+    display:block;
+    font-size:.8rem;
+    font-weight:600;
+    color:var(--ink-light);
+    margin-bottom:6px;
+  }
+  .field input{
+    width:100%;
+    font-size:1rem;
+    padding:10px 12px;
+    border-radius:10px;
+    border:1.5px solid var(--line);
+    background:#fff;
+    font-family:'Inter',sans-serif;
+    color:var(--ink);
+  }
+  .field input:focus{outline:2px solid var(--amber-dark); outline-offset:1px;}
+  .row2{display:flex; gap:12px;}
+  .row2 .field{flex:1;}
+  .hint{font-size:.75rem; color:#7a7262; margin-top:-8px; margin-bottom:16px;}
+
+  button{
+    font-family:'Inter',sans-serif;
+    cursor:pointer;
+    border:none;
+  }
+  .btn-primary{
+    width:100%;
+    padding:14px 16px;
+    background:var(--amber-dark);
+    color:#fff;
+    font-weight:700;
+    font-size:1rem;
+    border-radius:12px;
+    letter-spacing:.2px;
+  }
+  .btn-primary:active{transform:translateY(1px);}
+  .btn-primary:disabled{background:#b9b09a; cursor:not-allowed;}
+  .btn-secondary{
+    width:100%;
+    padding:11px 16px;
+    background:transparent;
+    color:var(--ink-light);
+    font-weight:600;
+    font-size:.85rem;
+    border-radius:10px;
+    border:1.5px solid var(--line);
+    margin-top:10px;
+  }
+  .btn-link{
+    background:none;
+    color:var(--ink-light);
+    font-size:.78rem;
+    text-decoration:underline;
+    padding:4px 0;
+  }
+
+  /* ---- Main screen ---- */
+  .progress-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    margin-bottom:14px;
+  }
+  .progress-row .count{font-size:.85rem; color:var(--ink-light); font-weight:600;}
+  .progress-row .seat{font-size:.85rem; color:var(--ink-light);}
+  .progressbar{
+    height:5px;
+    background:var(--paper-dim);
+    border-radius:3px;
+    overflow:hidden;
+    margin-bottom:22px;
+  }
+  .progressbar > div{
+    height:100%;
+    background:var(--amber-dark);
+  }
+
+  .reveal{
+    text-align:center;
+    padding:26px 10px 24px;
+    border-radius:14px;
+    background:var(--paper-dim);
+    border:1.5px dashed var(--line);
+    margin-bottom:18px;
+    min-height:150px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+  }
+  .reveal .placeholder{
+    color:#9a917c;
+    font-size:.95rem;
+  }
+  .set-badge{
+    font-family:'Lora',serif;
+    font-weight:700;
+    font-size:3.4rem;
+    line-height:1;
+    color:#fff;
+    width:92px;
+    height:92px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin:0 auto 14px;
+  }
+  .paper-no{
+    font-size:1.05rem;
+    font-weight:600;
+    color:var(--ink-light);
+  }
+  .paper-no b{color:var(--ink); font-size:1.25rem;}
+
+  .stats{
+    display:flex;
+    gap:8px;
+    margin-bottom:20px;
+  }
+  .chip{
+    flex:1;
+    text-align:center;
+    padding:8px 4px;
+    border-radius:10px;
+    background:var(--paper-dim);
+    font-size:.78rem;
+    font-weight:600;
+    color:var(--ink-light);
+    border-bottom:3px solid var(--line);
+  }
+  .chip .n{display:block; font-size:1rem; color:var(--ink); font-family:'Lora',serif;}
+
+  .finished{
+    text-align:center;
+    padding:8px 4px 4px;
+    font-size:.85rem;
+    color:var(--good);
+    font-weight:600;
+  }
+  .warn{
+    background:#fbe9df;
+    color:var(--bad);
+    border:1px solid #e6c2a8;
+    padding:10px 12px;
+    border-radius:10px;
+    font-size:.8rem;
+    margin-bottom:16px;
+  }
+
+  details.log{margin-top:18px;}
+  details.log summary{
+    cursor:pointer;
+    font-size:.8rem;
+    font-weight:600;
+    color:var(--ink-light);
+    padding:4px 0;
+  }
+  .log-list{
+    max-height:220px;
+    overflow-y:auto;
+    margin-top:8px;
+    border-top:1px solid var(--line);
+  }
+  .log-row{
+    display:flex;
+    justify-content:space-between;
+    font-size:.8rem;
+    padding:7px 2px;
+    border-bottom:1px solid var(--line);
+    color:var(--ink-light);
+  }
+  .log-row span.tag{
+    font-weight:700;
+    color:#fff;
+    padding:1px 8px;
+    border-radius:20px;
+    font-size:.72rem;
+  }
+  .log-actions{display:flex; gap:10px; margin-top:10px;}
+  .log-actions button{flex:1;}
+
+  footer.foot{
+    text-align:center;
+    padding:10px 0 4px;
+    font-size:.72rem;
+    color:#7a86b0;
+  }
+
+  @media (prefers-color-scheme: light){
+    body{background:var(--ink);}
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="card">
+    <header class="top">
+      <h1>Lab Exam Set Allotter</h1>
+      <p id="subtitle">Web Technology Lab — random set &amp; paper number per student</p>
+    </header>
+
+    <div class="body-pad">
+
+      <!-- SETUP SCREEN -->
+      <div id="setupScreen">
+        <div class="field">
+          <label for="setNames">Question paper sets (comma separated)</label>
+          <input id="setNames" type="text" value="A, B, C, D">
+        </div>
+        <div class="row2">
+          <div class="field">
+            <label for="papersPerSet">Papers per set</label>
+            <input id="papersPerSet" type="number" min="1" value="17">
+          </div>
+          <div class="field">
+            <label for="totalStudents">Total students</label>
+            <input id="totalStudents" type="number" min="1" value="63">
+          </div>
+        </div>
+        <div class="field">
+          <label for="perRow">Students per row (bench)</label>
+          <input id="perRow" type="number" min="1" value="5">
+        </div>
+        <div class="hint" id="capacityHint"></div>
+        <button class="btn-primary" id="startBtn">Start Exam</button>
+        <p class="hint" style="margin-top:14px;">A student never gets the same set as the student right before them, so side-by-side neighbours never match.</p>
+      </div>
+
+      <!-- MAIN SCREEN -->
+      <div id="mainScreen" style="display:none;">
+        <div id="warnBox"></div>
+        <div class="progress-row">
+          <span class="count" id="countLabel">Student 0 of 0</span>
+          <span class="seat" id="seatLabel">Row 0 · Seat 0</span>
+        </div>
+        <div class="progressbar"><div id="progressFill" style="width:0%"></div></div>
+
+        <div class="reveal" id="revealBox">
+          <div class="placeholder">Tap the button below and let the student press it to reveal their set.</div>
+        </div>
+
+        <div class="stats" id="statsRow"></div>
+
+        <button class="btn-primary" id="nextBtn">Reveal Next Student's Set</button>
+        <button class="btn-secondary" id="resetBtn">End &amp; Start New Exam</button>
+
+        <details class="log">
+          <summary>Allotment log</summary>
+          <div class="log-list" id="logList"></div>
+          <div class="log-actions">
+            <button class="btn-secondary" id="downloadBtn">Download CSV</button>
+          </div>
+        </details>
+      </div>
+
+    </div>
+  </div>
+  <footer class="foot">Assignments are saved on this phone — closing the page keeps your progress.</footer>
+</div>
+
+<script>
+(function(){
+  const STORAGE_KEY = 'examSetAllotterState_v1';
+  const setColors = ['#2F6F4F','#1D5C86','#6B3FA0','#8C4A2F','#B5651D','#3B6E8F','#7A6E1D','#4A5C8C'];
+
+  const setupScreen = document.getElementById('setupScreen');
+  const mainScreen = document.getElementById('mainScreen');
+  const setNamesInput = document.getElementById('setNames');
+  const papersPerSetInput = document.getElementById('papersPerSet');
+  const totalStudentsInput = document.getElementById('totalStudents');
+  const perRowInput = document.getElementById('perRow');
+  const capacityHint = document.getElementById('capacityHint');
+  const startBtn = document.getElementById('startBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const downloadBtn = document.getElementById('downloadBtn');
+  const revealBox = document.getElementById('revealBox');
+  const countLabel = document.getElementById('countLabel');
+  const seatLabel = document.getElementById('seatLabel');
+  const progressFill = document.getElementById('progressFill');
+  const statsRow = document.getElementById('statsRow');
+  const logList = document.getElementById('logList');
+  const warnBox = document.getElementById('warnBox');
+
+  let state = null;
+
+  function updateCapacityHint(){
+    const sets = parseSets();
+    const perSet = parseInt(papersPerSetInput.value) || 0;
+    const total = parseInt(totalStudentsInput.value) || 0;
+    const capacity = sets.length * perSet;
+    capacityHint.textContent = `${sets.length} sets × ${perSet} papers = ${capacity} papers available for ${total} students.`;
+    capacityHint.style.color = total > capacity ? '#c0392b' : '#7a7262';
+  }
+  [setNamesInput, papersPerSetInput, totalStudentsInput].forEach(el=>{
+    el.addEventListener('input', updateCapacityHint);
+  });
+  updateCapacityHint();
+
+  function parseSets(){
+    return setNamesInput.value.split(',').map(s=>s.trim()).filter(Boolean);
+  }
+
+  function colorFor(setName, sets){
+    const i = sets.indexOf(setName);
+    return setColors[i % setColors.length];
+  }
+
+  function loadState(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(raw) return JSON.parse(raw);
+    }catch(e){}
+    return null;
+  }
+  function saveState(){
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
+  }
+
+  function newState(sets, perSet, totalStudents, perRow){
+    const remaining = {};
+    sets.forEach(s=>{
+      const arr = [];
+      for(let i=1;i<=perSet;i++) arr.push(i);
+      remaining[s] = arr;
+    });
+    return {
+      sets, perSet, totalStudents, perRow,
+      remaining,
+      assignments: [],
+      lastSet: null
+    };
+  }
+
+  function shuffleAndPop(arr){
+    const idx = Math.floor(Math.random()*arr.length);
+    return arr.splice(idx,1)[0];
+  }
+
+  function pickAssignment(){
+    const availableSets = state.sets.filter(s => state.remaining[s].length > 0);
+    if(availableSets.length === 0) return null;
+
+    let candidates = availableSets.filter(s => s !== state.lastSet);
+    if(candidates.length === 0) candidates = availableSets; // only option left, must reuse
+
+    const chosenSet = candidates[Math.floor(Math.random()*candidates.length)];
+    const paperNo = shuffleAndPop(state.remaining[chosenSet]);
+    state.lastSet = chosenSet;
+    return {set: chosenSet, paper: paperNo};
+  }
+
+  function renderStats(){
+    statsRow.innerHTML = '';
+    state.sets.forEach(s=>{
+      const used = state.perSet - state.remaining[s].length;
+      const chip = document.createElement('div');
+      chip.className = 'chip';
+      chip.style.borderBottomColor = colorFor(s, state.sets);
+      chip.innerHTML = `<span class="n">${used}/${state.perSet}</span>Set ${s}`;
+      statsRow.appendChild(chip);
+    });
+  }
+
+  function renderLog(){
+    logList.innerHTML = '';
+    if(state.assignments.length === 0){
+      logList.innerHTML = '<div class="log-row" style="justify-content:center;color:#9a917c;">No students yet</div>';
+      return;
+    }
+    state.assignments.slice().reverse().forEach(a=>{
+      const row = document.createElement('div');
+      row.className = 'log-row';
+      row.innerHTML = `<span>#${a.index} · Row ${a.row} · Seat ${a.seat}</span>
+        <span class="tag" style="background:${colorFor(a.set, state.sets)}">${a.set}-${String(a.paper).padStart(2,'0')}</span>`;
+      logList.appendChild(row);
+    });
+  }
+
+  function renderProgress(){
+    const n = state.assignments.length;
+    countLabel.textContent = `Student ${n} of ${state.totalStudents}`;
+    progressFill.style.width = Math.min(100, (n/state.totalStudents)*100) + '%';
+    if(n < state.totalStudents){
+      const nextIndex = n+1;
+      const row = Math.ceil(nextIndex/state.perRow);
+      const seat = ((nextIndex-1) % state.perRow) + 1;
+      seatLabel.textContent = `Row ${row} · Seat ${seat}`;
+    } else {
+      seatLabel.textContent = 'Complete';
+    }
+  }
+
+  function renderReveal(a){
+    if(!a){
+      revealBox.innerHTML = '<div class="placeholder">Tap the button below and let the student press it to reveal their set.</div>';
+      return;
+    }
+    const color = colorFor(a.set, state.sets);
+    revealBox.innerHTML = `
+      <div class="set-badge" style="background:${color}">${a.set}</div>
+      <div class="paper-no">Paper No. <b>${String(a.paper).padStart(2,'0')}</b></div>
+    `;
+  }
+
+  function renderWarnings(){
+    warnBox.innerHTML = '';
+    const totalCapacity = state.sets.reduce((sum,s)=>sum + state.perSet, 0);
+    if(state.totalStudents > totalCapacity){
+      const w = document.createElement('div');
+      w.className = 'warn';
+      w.textContent = `Only ${totalCapacity} unique papers exist for ${state.totalStudents} students — some papers will repeat once supply runs out.`;
+      warnBox.appendChild(w);
+    }
+  }
+
+  function renderAll(){
+    renderProgress();
+    renderStats();
+    renderLog();
+    renderWarnings();
+    const n = state.assignments.length;
+    renderReveal(n>0 ? state.assignments[n-1] : null);
+    const allDone = n >= state.totalStudents;
+    const outOfPapers = state.sets.every(s => state.remaining[s].length === 0);
+    nextBtn.disabled = allDone || outOfPapers;
+    nextBtn.textContent = allDone ? 'All students done' : (outOfPapers ? 'No papers left' : (n===0 ? "Reveal Student 1's Set" : `Reveal Student ${n+1}'s Set`));
+  }
+
+  function startExam(){
+    const sets = parseSets();
+    const perSet = parseInt(papersPerSetInput.value) || 1;
+    const totalStudents = parseInt(totalStudentsInput.value) || 1;
+    const perRow = parseInt(perRowInput.value) || 1;
+    if(sets.length < 2){
+      alert('Please enter at least two set names.');
+      return;
+    }
+    state = newState(sets, perSet, totalStudents, perRow);
+    saveState();
+    setupScreen.style.display = 'none';
+    mainScreen.style.display = 'block';
+    renderAll();
+  }
+
+  function nextStudent(){
+    const pick = pickAssignment();
+    if(!pick) return;
+    const index = state.assignments.length + 1;
+    const row = Math.ceil(index/state.perRow);
+    const seat = ((index-1) % state.perRow) + 1;
+    state.assignments.push({index, row, seat, set: pick.set, paper: pick.paper});
+    saveState();
+    renderAll();
+  }
+
+  function resetExam(){
+    if(!confirm('End this exam session and clear all data? This cannot be undone.')) return;
+    localStorage.removeItem(STORAGE_KEY);
+    state = null;
+    mainScreen.style.display = 'none';
+    setupScreen.style.display = 'block';
+  }
+
+  function downloadCsv(){
+    let csv = 'Student No,Row,Seat,Set,Paper No\n';
+    state.assignments.forEach(a=>{
+      csv += `${a.index},${a.row},${a.seat},${a.set},${a.paper}\n`;
+    });
+    const blob = new Blob([csv], {type:'text/csv'});
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'exam_set_allotment.csv';
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
+  startBtn.addEventListener('click', startExam);
+  nextBtn.addEventListener('click', nextStudent);
+  resetBtn.addEventListener('click', resetExam);
+  downloadBtn.addEventListener('click', downloadCsv);
+
+  // restore previous session if present
+  const saved = loadState();
+  if(saved && saved.assignments){
+    state = saved;
+    setNamesInput.value = state.sets.join(', ');
+    papersPerSetInput.value = state.perSet;
+    totalStudentsInput.value = state.totalStudents;
+    perRowInput.value = state.perRow;
+    setupScreen.style.display = 'none';
+    mainScreen.style.display = 'block';
+    renderAll();
+  }
+})();
+</script>
+</body>
+</html>
